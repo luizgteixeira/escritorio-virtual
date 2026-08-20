@@ -4,8 +4,6 @@
 
 Desenvolvido por Luiz Gustavo — [luizgustavodev.com](https://luizgustavodev.com/)
 
-Este arquivo existe pra qualquer sessão do Claude Code (ex: aberta agora no VS Code) entender rápido onde o projeto parou e o que fazer a seguir, sem precisar reconstruir o contexto do zero.
-
 ## O que é
 
 Um "escritório virtual": um lugar único e organizado para petições, modelos de contrato, decisões judiciais, ofícios, documentos de clientes e arquivos grandes/geoespaciais — resolvendo a dificuldade do usuário de manter tudo organizado hoje.
