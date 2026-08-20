@@ -30,14 +30,14 @@ Checklist do ADR-001:
 - [x] Design system (cores + tipografia) definido
 - [x] Next.js criado (`create-next-app`, ainda no estado padrão/boilerplate)
 - [x] Schema do modelo de dados prototipado em SQL (`supabase/migrations/`) — workspace, documento (com categoria + tags), documento_versao, RLS por workspace_id
-- [ ] **← PRÓXIMO PASSO: criar o projeto Supabase de verdade (conta/org do Luiz), rodar a migration nele e preencher `.env.local`**
-- [ ] Construir upload + categorização + busca básica
+- [x] Projeto Supabase criado (`escritorio-virtual`, região São Paulo), migration rodada, `.env.local` preenchido e API confirmada respondendo com RLS ativa
+- [ ] **← PRÓXIMO PASSO: Construir upload + categorização + busca básica**
 - [ ] Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo"
 - [ ] Adicionar botão "Exportar tudo" (.zip) para backup local sob demanda
 - [ ] Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário
 - [ ] Se validar: revisar LGPD e sigilo profissional antes de abrir para outros advogados
 
-**Importante:** o schema em `supabase/migrations/` e o client em `src/lib/supabase/` são só o prototype local — ainda não há um projeto Supabase real criado nem `.env.local` preenchido. Sem isso, `npm run dev` builda mas nenhuma chamada ao Supabase funciona.
+**Importante:** o projeto Supabase (`escritorio-virtual`, São Paulo) já está criado e com o schema aplicado. `.env.local` está preenchido localmente (gitignorado — cada máquina precisa do seu). Ainda não existe nenhuma tela que use o Supabase de fato; os clients em `src/lib/supabase/` estão prontos mas sem nenhum caller ainda.
 
 ## O que já existe neste repositório
 
@@ -57,8 +57,8 @@ escritorio-virtual/
 │       └── 20260820000001_init_schema.sql   Schema: workspace, documento, documento_versao + RLS
 ├── src/                   App Next.js (scaffold padrão do create-next-app, ainda não customizado)
 │   ├── app/               page.tsx / layout.tsx — boilerplate, falta aplicar os tokens de design
-│   └── lib/supabase/      client.ts (browser) e server.ts (Server Components) — falta o projeto Supabase real pra usar
-├── .env.local.example     Variáveis que o Supabase vai precisar (copiar pra .env.local depois de criar o projeto)
+│   └── lib/supabase/      client.ts (browser) e server.ts (Server Components) — projeto Supabase real já conectado
+├── .env.local.example     Modelo do .env.local (o real é gitignorado, uma cópia por máquina)
 └── package.json           Next.js 16, React 19, Tailwind 4, @supabase/supabase-js, @supabase/ssr
 ```
 
