@@ -21,7 +21,7 @@ Toda a decisão de arquitetura e o histórico de negociação vivem no cofre do 
 
 Leia o ADR-001 antes de tomar qualquer decisão técnica nova — ele já resolveu vários trade-offs (por quê Next.js + Supabase, por quê dois provedores de storage, etc.) e não faz sentido reabrir essas discussões sem motivo novo.
 
-## Status: onde paramos
+## Status: onde parei
 
 Checklist do ADR-001:
 
