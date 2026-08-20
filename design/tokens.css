@@ -1,0 +1,67 @@
+:root {
+  --bg: #e7e4da;
+  --surface: #f4f2ea;
+  --surface-2: #ece8dd;
+  --ink: #1e2230;
+  --ink-muted: #5c5f6a;
+  --accent: #7a2333;
+  --accent-soft: #f1dfe1;
+  --success: #3f5c46;
+  --success-soft: #e3ebe2;
+  --warning: #8a5a20;
+  --warning-soft: #f0e5d5;
+  --danger: #a53a2f;
+  --danger-soft: #f4ded9;
+  --line: rgba(30, 34, 48, 0.16);
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171d;
+    --surface: #1c1f27;
+    --surface-2: #21242d;
+    --ink: #e9e6dc;
+    --ink-muted: #a4a5a9;
+    --accent: #e29aa4;
+    --accent-soft: #33222a;
+    --success: #8bb494;
+    --success-soft: #22281f;
+    --warning: #e0ab6d;
+    --warning-soft: #2c2519;
+    --danger: #e2827a;
+    --danger-soft: #362320;
+    --line: rgba(233, 230, 220, 0.16);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #15171d;
+  --surface: #1c1f27;
+  --surface-2: #21242d;
+  --ink: #e9e6dc;
+  --ink-muted: #a4a5a9;
+  --accent: #e29aa4;
+  --accent-soft: #33222a;
+  --success: #8bb494;
+  --success-soft: #22281f;
+  --warning: #e0ab6d;
+  --warning-soft: #2c2519;
+  --danger: #e2827a;
+  --danger-soft: #362320;
+  --line: rgba(233, 230, 220, 0.16);
+}
+
+/* Escala tipográfica de referência
+   display : var(--font-display) 700 40px
+   h1      : var(--font-display) 600 26px
+   h2      : var(--font-display) 600 19px
+   h3      : var(--font-body)    600 15px
+   body    : var(--font-body)    400 15px / 1.6
+   small   : var(--font-body)    400 13px  (--ink-muted)
+   label   : var(--font-mono)    500 11px  uppercase, letter-spacing .06em
+   mono    : var(--font-mono)    400 13px  tabular-nums
+*/
