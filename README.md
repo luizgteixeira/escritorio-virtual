@@ -31,13 +31,13 @@ Checklist do ADR-001:
 - [x] Next.js criado (`create-next-app`, ainda no estado padrão/boilerplate)
 - [x] Schema do modelo de dados prototipado em SQL (`supabase/migrations/`) — workspace, documento (com categoria + tags), documento_versao, RLS por workspace_id
 - [x] Projeto Supabase criado (`escritorio-virtual`, região São Paulo), migration rodada, `.env.local` preenchido e API confirmada respondendo com RLS ativa
-- [ ] **← PRÓXIMO PASSO: Construir upload + categorização + busca básica**
-- [ ] Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo"
+- [x] Upload + categorização + busca básica implementados, migrations aplicadas e testados no navegador (login, upload de documento real, aparece na lista com link de download funcionando)
+- [ ] **← PRÓXIMO PASSO: Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo"**
 - [ ] Adicionar botão "Exportar tudo" (.zip) para backup local sob demanda
 - [ ] Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário
 - [ ] Se validar: revisar LGPD e sigilo profissional antes de abrir para outros advogados
 
-**Importante:** o projeto Supabase (`escritorio-virtual`, São Paulo) já está criado e com o schema aplicado. `.env.local` está preenchido localmente (gitignorado — cada máquina precisa do seu). Ainda não existe nenhuma tela que use o Supabase de fato; os clients em `src/lib/supabase/` estão prontos mas sem nenhum caller ainda.
+**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real. Ainda falta testar a busca em si (só o upload foi confirmado até agora) e nada de `documento_versao`/modelo padrão de Ofício foi construído — é o próximo passo do checklist.
 
 ## O que já existe neste repositório
 
@@ -54,10 +54,21 @@ escritorio-virtual/
 │   └── tokens.css         Variáveis CSS de cor + escala tipográfica (claro/escuro)
 ├── supabase/
 │   └── migrations/
-│       └── 20260820000001_init_schema.sql   Schema: workspace, documento, documento_versao + RLS
-├── src/                   App Next.js (scaffold padrão do create-next-app, ainda não customizado)
-│   ├── app/               page.tsx / layout.tsx — boilerplate, falta aplicar os tokens de design
-│   └── lib/supabase/      client.ts (browser) e server.ts (Server Components) — projeto Supabase real já conectado
+│       ├── 20260820000001_init_schema.sql        Schema: workspace, documento, documento_versao + RLS
+│       ├── 20260820000002_storage_documentos.sql  Bucket "documentos" + RLS de Storage (não rodada ainda)
+│       └── 20260820000003_documento_busca.sql     Busca full-text (tsvector + GIN) (não rodada ainda)
+├── src/
+│   ├── proxy.ts           Sessão + proteção de rotas (convenção Next 16, era middleware.ts)
+│   ├── app/
+│   │   ├── page.tsx        Dashboard: upload, filtro/busca, lista de documentos
+│   │   ├── layout.tsx      Fontes da marca (Fraunces/Source Sans 3/IBM Plex Mono)
+│   │   ├── login/          Tela de login (email+senha) + server action
+│   │   ├── actions.ts       Server action de logout
+│   │   └── actions/documentos.ts   Server action de criar documento
+│   ├── components/         UploadForm e DocumentList
+│   └── lib/
+│       ├── supabase/       client.ts, server.ts, middleware.ts (sessão)
+│       └── workspace.ts    getOrCreateWorkspace (bootstrap do workspace único)
 ├── .env.local.example     Modelo do .env.local (o real é gitignorado, uma cópia por máquina)
 └── package.json           Next.js 16, React 19, Tailwind 4, @supabase/supabase-js, @supabase/ssr
 ```
