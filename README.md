@@ -2,6 +2,8 @@
 
 > Nome do projeto ainda **provisório**. Sistema de gestão documental para advocacia — começa como ferramenta pessoal (uso individual), com o objetivo de virar produto vendável para outros advogados depois de validado.
 
+Desenvolvido por Luiz Gustavo — [luizgustavodev.com](https://luizgustavodev.com/)
+
 Este arquivo existe pra qualquer sessão do Claude Code (ex: aberta agora no VS Code) entender rápido onde o projeto parou e o que fazer a seguir, sem precisar reconstruir o contexto do zero.
 
 ## O que é
