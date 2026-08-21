@@ -1,17 +1,18 @@
-import { createClient } from "@/lib/supabase/server";
-import { getOrCreateWorkspace } from "@/lib/workspace";
-import { signOut } from "./actions";
-import { UploadForm } from "@/components/upload-form";
-import { DocumentList, type DocumentoRow } from "@/components/document-list";
+import { createClient } from '@/lib/supabase/server';
+import { getOrCreateWorkspace } from '@/lib/workspace';
+import { signOut } from './actions';
+import { UploadForm } from '@/components/upload-form';
+import { NewOficioForm } from '@/components/new-oficio-form';
+import { DocumentList, type DocumentoRow } from '@/components/document-list';
 
 const CATEGORIAS = [
-  { value: "", label: "Todas as categorias" },
-  { value: "peticoes", label: "Petições" },
-  { value: "modelos_contrato", label: "Modelos de Contrato" },
-  { value: "decisoes_judiciais", label: "Decisões Judiciais" },
-  { value: "oficios", label: "Ofícios" },
-  { value: "documentos_clientes", label: "Documentos de Clientes" },
-  { value: "geoespacial_grandes", label: "Geoespacial / Grandes" },
+  { value: '', label: 'Todas as categorias' },
+  { value: 'peticoes', label: 'Petições' },
+  { value: 'modelos_contrato', label: 'Modelos de Contrato' },
+  { value: 'decisoes_judiciais', label: 'Decisões Judiciais' },
+  { value: 'oficios', label: 'Ofícios' },
+  { value: 'documentos_clientes', label: 'Documentos de Clientes' },
+  { value: 'geoespacial_grandes', label: 'Geoespacial / Grandes' },
 ];
 
 export default async function Home({
@@ -33,17 +34,22 @@ export default async function Home({
   const workspace = await getOrCreateWorkspace(supabase, user.id, user.email);
 
   let query = supabase
-    .from("documento")
-    .select("id, titulo, categoria, cliente, processo, tags, storage_path, created_at")
-    .eq("workspace_id", workspace.id)
-    .order("created_at", { ascending: false })
+    .from('documento')
+    .select(
+      'id, titulo, categoria, cliente, processo, tags, storage_path, created_at'
+    )
+    .eq('workspace_id', workspace.id)
+    .order('created_at', { ascending: false })
     .limit(200);
 
   if (categoria) {
-    query = query.eq("categoria", categoria);
+    query = query.eq('categoria', categoria);
   }
   if (q) {
-    query = query.textSearch("busca", q, { type: "websearch", config: "portuguese" });
+    query = query.textSearch('busca', q, {
+      type: 'websearch',
+      config: 'portuguese',
+    });
   }
 
   const { data: documentos } = await query;
@@ -54,7 +60,7 @@ export default async function Home({
   if (paths.length) {
     try {
       const { data, error } = await supabase.storage
-        .from("documentos")
+        .from('documentos')
         .createSignedUrls(paths, 300);
       if (error) throw error;
       signedUrls = data ?? [];
@@ -66,7 +72,9 @@ export default async function Home({
     }
   }
 
-  const urlByPath = new Map(signedUrls.map((entry) => [entry.path, entry.signedUrl]));
+  const urlByPath = new Map(
+    signedUrls.map((entry) => [entry.path, entry.signedUrl])
+  );
 
   const documentosComUrl: DocumentoRow[] = rows.map((doc) => ({
     id: doc.id,
@@ -83,7 +91,9 @@ export default async function Home({
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink">{workspace.nome}</h1>
+          <h1 className="font-display text-2xl font-semibold text-ink">
+            {workspace.nome}
+          </h1>
           <p className="font-body text-sm text-ink-muted">{user.email}</p>
         </div>
         <form action={signOut}>
@@ -97,18 +107,19 @@ export default async function Home({
       </header>
 
       <UploadForm workspaceId={workspace.id} />
+      <NewOficioForm workspaceId={workspace.id} />
 
       <form method="get" className="flex flex-wrap gap-3">
         <input
           type="text"
           name="q"
           placeholder="Buscar por título, cliente, processo, tags..."
-          defaultValue={q ?? ""}
+          defaultValue={q ?? ''}
           className="min-w-[240px] flex-1 rounded-md border border-line bg-surface px-3 py-2 font-body text-sm text-ink"
         />
         <select
           name="categoria"
-          defaultValue={categoria ?? ""}
+          defaultValue={categoria ?? ''}
           className="rounded-md border border-line bg-surface px-3 py-2 font-body text-sm text-ink"
         >
           {CATEGORIAS.map((option) => (

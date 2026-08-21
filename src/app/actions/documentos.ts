@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from 'next/cache';
+import { createClient } from '@/lib/supabase/server';
 
 export type CreateDocumentoInput = {
   id: string;
@@ -13,12 +13,13 @@ export type CreateDocumentoInput = {
   area?: string;
   tags: string[];
   storagePath: string;
+  isModeloPadrao?: boolean;
 };
 
 export async function createDocumento(input: CreateDocumentoInput) {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("documento").insert({
+  const { error } = await supabase.from('documento').insert({
     id: input.id,
     workspace_id: input.workspaceId,
     categoria: input.categoria,
@@ -27,7 +28,9 @@ export async function createDocumento(input: CreateDocumentoInput) {
     processo: input.processo || null,
     area: input.area || null,
     tags: input.tags,
-    storage_provider: "supabase",
+    is_modelo_padrao:
+      input.categoria === 'oficios' && input.isModeloPadrao === true,
+    storage_provider: 'supabase',
     storage_path: input.storagePath,
   });
 
@@ -35,5 +38,88 @@ export async function createDocumento(input: CreateDocumentoInput) {
     throw error;
   }
 
-  revalidatePath("/");
+  revalidatePath('/');
+}
+
+export type CreateOficioFromModeloInput = {
+  workspaceId: string;
+  titulo: string;
+  cliente?: string;
+  processo?: string;
+  area?: string;
+  tags?: string[];
+};
+
+export async function createOficioFromModelo(
+  input: CreateOficioFromModeloInput
+) {
+  const titulo = input.titulo.trim();
+  if (!titulo) {
+    throw new Error('Título é obrigatório.');
+  }
+
+  const supabase = await createClient();
+  const { data: modelo, error: modeloError } = await supabase
+    .from('documento')
+    .select('storage_path')
+    .eq('workspace_id', input.workspaceId)
+    .eq('categoria', 'oficios')
+    .eq('is_modelo_padrao', true)
+    .maybeSingle();
+
+  if (modeloError) {
+    throw modeloError;
+  }
+  if (!modelo) {
+    throw new Error('Nenhum modelo padrão de Ofícios foi cadastrado.');
+  }
+
+  const documentoId = crypto.randomUUID();
+  const arquivoModelo =
+    modelo.storage_path.split('/').pop() || 'oficio-padrao.md';
+  const storagePath = `${input.workspaceId}/${documentoId}/${arquivoModelo}`;
+  const { error: copyError } = await supabase.storage
+    .from('documentos')
+    .copy(modelo.storage_path, storagePath);
+
+  if (copyError) {
+    throw copyError;
+  }
+
+  const { error: documentoError } = await supabase.from('documento').insert({
+    id: documentoId,
+    workspace_id: input.workspaceId,
+    categoria: 'oficios',
+    titulo,
+    cliente: input.cliente?.trim() || null,
+    processo: input.processo?.trim() || null,
+    area: input.area?.trim() || null,
+    tags: input.tags ?? [],
+    is_modelo_padrao: false,
+    storage_provider: 'supabase',
+    storage_path: storagePath,
+  });
+
+  if (documentoError) {
+    await supabase.storage.from('documentos').remove([storagePath]);
+    throw documentoError;
+  }
+
+  const { error: versaoError } = await supabase
+    .from('documento_versao')
+    .insert({
+      documento_id: documentoId,
+      numero: 1,
+      storage_provider: 'supabase',
+      storage_path: storagePath,
+    });
+
+  if (versaoError) {
+    await supabase.from('documento').delete().eq('id', documentoId);
+    await supabase.storage.from('documentos').remove([storagePath]);
+    throw versaoError;
+  }
+
+  revalidatePath('/');
+  return { documentoId };
 }

@@ -1,0 +1,114 @@
+'use client';
+
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createOficioFromModelo } from '@/app/actions/documentos';
+
+export function NewOficioForm({ workspaceId }: { workspaceId: string }) {
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMsg(null);
+
+    const formData = new FormData(event.currentTarget);
+    const titulo = String(formData.get('titulo') ?? '').trim();
+    const tags = String(formData.get('tags') ?? '')
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+
+    setSubmitting(true);
+    try {
+      await createOficioFromModelo({
+        workspaceId,
+        titulo,
+        cliente: String(formData.get('cliente') ?? ''),
+        processo: String(formData.get('processo') ?? ''),
+        area: String(formData.get('area') ?? ''),
+        tags,
+      });
+      formRef.current?.reset();
+      router.refresh();
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error ? err.message : 'Erro ao criar o Ofício.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-5"
+    >
+      <div>
+        <h2 className="font-display text-lg font-semibold text-ink">
+          Novo Ofício
+        </h2>
+        <p className="font-body text-sm text-ink-muted">
+          Criado a partir do modelo padrão.
+        </p>
+      </div>
+
+      {errorMsg && (
+        <p className="rounded-md bg-danger-soft px-3 py-2 font-body text-sm text-danger">
+          {errorMsg}
+        </p>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <input
+          name="titulo"
+          type="text"
+          required
+          placeholder="Título do Ofício"
+          aria-label="Título do Ofício"
+          className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink sm:col-span-2"
+        />
+        <input
+          name="cliente"
+          type="text"
+          placeholder="Cliente"
+          aria-label="Cliente"
+          className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
+        />
+        <input
+          name="processo"
+          type="text"
+          placeholder="Processo"
+          aria-label="Processo"
+          className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
+        />
+        <input
+          name="area"
+          type="text"
+          placeholder="Área"
+          aria-label="Área"
+          className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
+        />
+        <input
+          name="tags"
+          type="text"
+          placeholder="Tags separadas por vírgula"
+          aria-label="Tags separadas por vírgula"
+          className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={submitting}
+        className="self-start rounded-md bg-accent px-4 py-2 font-body font-medium text-surface disabled:opacity-60"
+      >
+        {submitting ? 'Criando...' : 'Criar a partir do modelo'}
+      </button>
+    </form>
+  );
+}
