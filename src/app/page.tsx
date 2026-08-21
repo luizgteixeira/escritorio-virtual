@@ -4,6 +4,7 @@ import { signOut } from './actions';
 import { UploadForm } from '@/components/upload-form';
 import { NewOficioForm } from '@/components/new-oficio-form';
 import { DocumentList, type DocumentoRow } from '@/components/document-list';
+import Image from 'next/image';
 
 const CATEGORIAS = [
   { value: '', label: 'Todas as categorias' },
@@ -32,6 +33,8 @@ export default async function Home({
   }
 
   const workspace = await getOrCreateWorkspace(supabase, user.id, user.email);
+  const displayName =
+    user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email;
 
   let query = supabase
     .from('documento')
@@ -89,21 +92,40 @@ export default async function Home({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-semibold text-ink">
-            {workspace.nome}
-          </h1>
-          <p className="font-body text-sm text-ink-muted">{user.email}</p>
+      <header className="flex items-center justify-between border-b border-line pb-5">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/sigiloteca-icon.svg"
+            alt=""
+            width={44}
+            height={44}
+            priority
+          />
+          <div>
+            <p className="font-display text-2xl font-semibold text-ink">
+              Sigiloteca
+            </p>
+            <p className="font-body text-sm text-ink-muted">
+              Área de documentos · {displayName}
+            </p>
+          </div>
         </div>
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="rounded-md border border-line px-3 py-2 font-body text-sm text-ink-muted"
+        <div className="flex items-center gap-3">
+          <a
+            href="/api/exportar"
+            className="rounded-md border border-line px-3 py-2 font-body text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
           >
-            Sair
-          </button>
-        </form>
+            Exportar tudo
+          </a>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="rounded-md border border-line px-3 py-2 font-body text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+            >
+              Sair
+            </button>
+          </form>
+        </div>
       </header>
 
       <UploadForm workspaceId={workspace.id} />
@@ -130,13 +152,13 @@ export default async function Home({
         </select>
         <button
           type="submit"
-          className="rounded-md bg-accent px-4 py-2 font-body text-sm font-medium text-surface"
+          className="rounded-md bg-accent px-4 py-2 font-body text-sm font-medium text-surface transition-colors hover:bg-accent/85"
         >
           Buscar
         </button>
       </form>
 
-      <DocumentList documentos={documentosComUrl} />
+      <DocumentList documentos={documentosComUrl} workspaceId={workspace.id} />
     </div>
   );
 }

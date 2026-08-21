@@ -1,4 +1,6 @@
-import { signIn } from "./actions";
+import Image from 'next/image';
+import { signIn } from './actions';
+import { PasswordField } from '@/components/password-field';
 
 export default async function LoginPage({
   searchParams,
@@ -10,9 +12,23 @@ export default async function LoginPage({
   return (
     <div className="flex min-h-full flex-1 items-center justify-center bg-bg px-4">
       <div className="w-full max-w-sm rounded-lg border border-line bg-surface p-8">
-        <h1 className="font-display text-2xl font-semibold text-ink">
-          Sigiloteca
-        </h1>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/sigiloteca-icon.svg"
+            alt=""
+            width={52}
+            height={52}
+            priority
+          />
+          <div>
+            <h1 className="font-display text-2xl font-semibold text-ink">
+              Sigiloteca
+            </h1>
+            <p className="font-mono text-[10px] uppercase tracking-wide text-accent">
+              Gestão jurídica
+            </p>
+          </div>
+        </div>
         <p className="mt-1 font-body text-sm text-ink-muted">
           Entre com seu email e senha.
         </p>
@@ -25,7 +41,10 @@ export default async function LoginPage({
 
         <form action={signIn} className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="font-mono text-xs uppercase tracking-wide text-ink-muted">
+            <label
+              htmlFor="email"
+              className="font-mono text-xs uppercase tracking-wide text-ink-muted"
+            >
               Email
             </label>
             <input
@@ -39,22 +58,18 @@ export default async function LoginPage({
           </div>
 
           <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="font-mono text-xs uppercase tracking-wide text-ink-muted">
+            <label
+              htmlFor="password"
+              className="font-mono text-xs uppercase tracking-wide text-ink-muted"
+            >
               Senha
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              autoComplete="current-password"
-              className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-ink"
-            />
+            <PasswordField />
           </div>
 
           <button
             type="submit"
-            className="mt-2 rounded-md bg-accent px-4 py-2 font-body font-medium text-surface"
+            className="mt-2 rounded-md bg-accent px-4 py-2 font-body font-medium text-surface transition-colors hover:bg-accent/85"
           >
             Entrar
           </button>

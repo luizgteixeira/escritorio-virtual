@@ -34,12 +34,12 @@ Checklist do ADR-001:
 - [x] Upload + categorização + busca básica implementados, migrations aplicadas e testados no navegador (login, upload de documento real, aparece na lista com link de download funcionando)
 - [x] Nome definitivo validado e aplicado: **Sigiloteca** (repositório no GitHub, pasta local, `package.json`, título do app e tela de login, wordmark dos lockups — tudo renomeado e consistente)
 - [x] Favicon real gerado a partir da marca (`brand/favicon.ico`, substituiu o placeholder padrão do `create-next-app`) + exports em PNG do ícone e dos lockups em `brand/png/`
-- [ ] **← PRÓXIMO PASSO: Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo"**
-- [ ] Adicionar botão "Exportar tudo" (.zip) para backup local sob demanda
-- [ ] Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário
+- [x] Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo" — cópia no Storage e versão inicial registrada em `documento_versao`
+- [x] Adicionar botão "Exportar tudo" (.zip) para backup local sob demanda — inclui os arquivos do Storage e um `manifest.json` com os metadados
+- [ ] **← PRÓXIMO PASSO: Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário**
 - [ ] Se validar: revisar LGPD e sigilo profissional antes de abrir para outros advogados
 
-**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). Nada de `documento_versao`/modelo padrão de Ofício foi construído ainda — é o próximo passo do checklist. Rename para Sigiloteca commitado (`1550913`); funcionalidade em si segue a partir de `a7dfe48`.
+**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). O modelo padrão de Ofício já pode gerar novos Ofícios, com a cópia registrada como versão inicial em `documento_versao`. A exportação completa em `.zip` inclui os arquivos do Storage e um `manifest.json` com os metadados. O próximo passo é usar o sistema por 2–3 semanas e ajustar a organização. Rename para Sigiloteca commitado (`1550913`); funcionalidade em si segue a partir de `a7dfe48`.
 
 ## O que já existe neste repositório
 
@@ -56,6 +56,8 @@ sigiloteca/
 │   └── png/              Exports em PNG do ícone e dos lockups (64–512px)
 ├── design/
 │   └── tokens.css         Variáveis CSS de cor + escala tipográfica (claro/escuro)
+├── modelos/
+│   └── oficio-padrao.md    Modelo padrão de Ofício
 ├── supabase/
 │   └── migrations/
 │       ├── 20260820000001_init_schema.sql        Schema: workspace, documento, documento_versao + RLS
@@ -79,14 +81,14 @@ sigiloteca/
 
 ## Stack decidida (ADR-001)
 
-| Papel | Escolha | Motivo |
-| --- | --- | --- |
-| Frontend | Next.js | Web hoje, caminho aberto pra PWA depois |
-| Backend + Auth | Supabase (Postgres) | RLS nativo já isola dados por workspace desde o dia 1 |
-| Arquivos — documentos | Supabase Storage | PDFs, DOCX, RG/certidões escaneadas |
-| Arquivos — geoespaciais/grandes | Cloudflare R2 | Sem custo de egress, mais barato pra `.dwg`/`.shp`/mapas grandes |
-| Busca | Postgres full-text search | Suficiente pro volume do MVP |
-| Backup local | Botão "Exportar tudo" (.zip) | Nuvem é a fonte oficial; local é só cópia sob demanda |
+| Papel                           | Escolha                      | Motivo                                                           |
+| ------------------------------- | ---------------------------- | ---------------------------------------------------------------- |
+| Frontend                        | Next.js                      | Web hoje, caminho aberto pra PWA depois                          |
+| Backend + Auth                  | Supabase (Postgres)          | RLS nativo já isola dados por workspace desde o dia 1            |
+| Arquivos — documentos           | Supabase Storage             | PDFs, DOCX, RG/certidões escaneadas                              |
+| Arquivos — geoespaciais/grandes | Cloudflare R2                | Sem custo de egress, mais barato pra `.dwg`/`.shp`/mapas grandes |
+| Busca                           | Postgres full-text search    | Suficiente pro volume do MVP                                     |
+| Backup local                    | Botão "Exportar tudo" (.zip) | Nuvem é a fonte oficial; local é só cópia sob demanda            |
 
 Hospedagem e domínio: por conta do desenvolvedor (Luiz), sem custo adicional pra cliente nesta fase.
 
@@ -101,14 +103,14 @@ Workspace (o escritório da cliente)
 
 ### As 6 categorias validadas
 
-| Categoria | Conteúdo | Observação |
-| --- | --- | --- |
-| Petições | Peças processuais | — |
-| Modelos de Contrato | Templates reutilizáveis | Suporta "novo a partir do modelo" |
-| Decisões Judiciais | Sentenças, despachos | — |
-| Ofícios | Peças de ofício | **Sempre nasce de um modelo padrão** — ação "Novo a partir deste modelo" |
-| Documentos de Clientes | RG, matrículas, certidões | Dado sensível — mesmo nível de sigilo dos autos |
-| Geoespacial / Grandes | Mapas, `.dwg`, `.shp`, `.kml`/`.kmz`, `.jpg`, `.png` | Binários grandes, **sem preview no MVP** — só download pro programa certo (AutoCAD, QGIS, Google Earth) |
+| Categoria              | Conteúdo                                             | Observação                                                                                              |
+| ---------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Petições               | Peças processuais                                    | —                                                                                                       |
+| Modelos de Contrato    | Templates reutilizáveis                              | Suporta "novo a partir do modelo"                                                                       |
+| Decisões Judiciais     | Sentenças, despachos                                 | —                                                                                                       |
+| Ofícios                | Peças de ofício                                      | **Sempre nasce de um modelo padrão** — ação "Novo a partir deste modelo"                                |
+| Documentos de Clientes | RG, matrículas, certidões                            | Dado sensível — mesmo nível de sigilo dos autos                                                         |
+| Geoespacial / Grandes  | Mapas, `.dwg`, `.shp`, `.kml`/`.kmz`, `.jpg`, `.png` | Binários grandes, **sem preview no MVP** — só download pro programa certo (AutoCAD, QGIS, Google Earth) |
 
 ### Regras importantes pro schema
 

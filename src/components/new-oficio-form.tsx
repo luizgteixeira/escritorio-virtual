@@ -105,7 +105,7 @@ export function NewOficioForm({ workspaceId }: { workspaceId: string }) {
       <button
         type="submit"
         disabled={submitting}
-        className="self-start rounded-md bg-accent px-4 py-2 font-body font-medium text-surface disabled:opacity-60"
+        className="self-start rounded-md bg-accent px-4 py-2 font-body font-medium text-surface transition-colors hover:bg-accent/85 disabled:opacity-60 disabled:hover:bg-accent"
       >
         {submitting ? 'Criando...' : 'Criar a partir do modelo'}
       </button>

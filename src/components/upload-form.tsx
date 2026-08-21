@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { createDocumento } from '@/app/actions/documentos';
@@ -33,6 +34,36 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+
+    const file = event.target.files?.[0] ?? null;
+    const url = file ? URL.createObjectURL(file) : null;
+    previewUrlRef.current = url;
+    setSelectedFile(file);
+    setPreviewUrl(url);
+  }
+
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024 * 1024) {
+      return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,6 +127,12 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
 
       formRef.current?.reset();
       setCategoriaSelecionada('');
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
+      setSelectedFile(null);
+      setPreviewUrl(null);
       router.refresh();
     } catch (err) {
       setErrorMsg(
@@ -135,9 +172,51 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
             name="file"
             type="file"
             required
+            accept=".pdf,image/*,.doc,.docx,.xls,.xlsx,.txt,.md"
+            onChange={handleFileChange}
             className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
           />
         </div>
+
+        {selectedFile && previewUrl && (
+          <div className="flex flex-col gap-2 rounded-md border border-line bg-surface-2 p-3 sm:col-span-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="font-mono text-xs uppercase tracking-wide text-ink-muted">
+                Prévia para confirmação
+              </p>
+              <p className="font-body text-xs text-ink-muted">
+                {selectedFile.name} · {formatFileSize(selectedFile.size)}
+              </p>
+            </div>
+            {selectedFile.type === 'application/pdf' ? (
+              <iframe
+                src={`${previewUrl}#page=1&view=FitH`}
+                title={`Prévia da primeira página de ${selectedFile.name}`}
+                className="h-72 w-full rounded border border-line bg-white"
+              />
+            ) : selectedFile.type.startsWith('image/') ? (
+              <div className="flex min-h-40 items-center justify-center rounded border border-line bg-white p-3">
+                <Image
+                  src={previewUrl}
+                  alt={`Prévia de ${selectedFile.name}`}
+                  width={800}
+                  height={600}
+                  unoptimized
+                  className="max-h-72 max-w-full object-contain"
+                />
+              </div>
+            ) : (
+              <div className="rounded border border-line bg-white px-4 py-8 text-center">
+                <p className="font-display text-lg font-semibold text-ink">
+                  {selectedFile.name}
+                </p>
+                <p className="mt-1 font-body text-sm text-ink-muted">
+                  Este formato será armazenado para download após o envio.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-1 sm:col-span-2">
           <label
@@ -259,7 +338,7 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
       <button
         type="submit"
         disabled={submitting}
-        className="mt-2 self-start rounded-md bg-accent px-4 py-2 font-body font-medium text-surface disabled:opacity-60"
+        className="mt-2 self-start rounded-md bg-accent px-4 py-2 font-body font-medium text-surface transition-colors hover:bg-accent/85 disabled:opacity-60 disabled:hover:bg-accent"
       >
         {submitting ? 'Enviando...' : 'Enviar'}
       </button>

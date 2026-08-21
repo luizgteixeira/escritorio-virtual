@@ -123,3 +123,58 @@ export async function createOficioFromModelo(
   revalidatePath('/');
   return { documentoId };
 }
+
+export async function deleteDocumento(
+  documentoId: string,
+  workspaceId: string
+) {
+  const supabase = await createClient();
+  const { data: documento, error: documentoError } = await supabase
+    .from('documento')
+    .select('id, storage_path')
+    .eq('id', documentoId)
+    .eq('workspace_id', workspaceId)
+    .maybeSingle();
+
+  if (documentoError) {
+    throw documentoError;
+  }
+  if (!documento) {
+    throw new Error('Documento não encontrado.');
+  }
+
+  const { data: versoes, error: versoesError } = await supabase
+    .from('documento_versao')
+    .select('storage_path')
+    .eq('documento_id', documento.id);
+
+  if (versoesError) {
+    throw versoesError;
+  }
+
+  const paths = Array.from(
+    new Set([
+      documento.storage_path,
+      ...(versoes ?? []).map((versao) => versao.storage_path),
+    ])
+  );
+  const { error: storageError } = await supabase.storage
+    .from('documentos')
+    .remove(paths);
+
+  if (storageError) {
+    throw storageError;
+  }
+
+  const { error: deleteError } = await supabase
+    .from('documento')
+    .delete()
+    .eq('id', documento.id)
+    .eq('workspace_id', workspaceId);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+
+  revalidatePath('/');
+}
