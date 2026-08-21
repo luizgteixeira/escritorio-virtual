@@ -37,7 +37,7 @@ Checklist do ADR-001:
 - [ ] Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário
 - [ ] Se validar: revisar LGPD e sigilo profissional antes de abrir para outros advogados
 
-**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real. Ainda falta testar a busca em si (só o upload foi confirmado até agora) e nada de `documento_versao`/modelo padrão de Ofício foi construído — é o próximo passo do checklist.
+**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). Nada de `documento_versao`/modelo padrão de Ofício foi construído ainda — é o próximo passo do checklist. Tudo já commitado (`a7dfe48`).
 
 ## O que já existe neste repositório
 
@@ -55,8 +55,8 @@ escritorio-virtual/
 ├── supabase/
 │   └── migrations/
 │       ├── 20260820000001_init_schema.sql        Schema: workspace, documento, documento_versao + RLS
-│       ├── 20260820000002_storage_documentos.sql  Bucket "documentos" + RLS de Storage (não rodada ainda)
-│       └── 20260820000003_documento_busca.sql     Busca full-text (tsvector + GIN) (não rodada ainda)
+│       ├── 20260820000002_storage_documentos.sql  Bucket "documentos" + RLS de Storage
+│       └── 20260820000003_documento_busca.sql     Busca full-text via trigger (tsvector + GIN)
 ├── src/
 │   ├── proxy.ts           Sessão + proteção de rotas (convenção Next 16, era middleware.ts)
 │   ├── app/
@@ -114,7 +114,7 @@ Workspace (o escritório da cliente)
 
 ## Design system
 
-Importar `design/tokens.css` no projeto Next.js (ainda não foi feito — o scaffold segue com o CSS padrão do `create-next-app`). Resumo:
+Já importado em `src/app/globals.css` e aplicado nas telas reais (login, dashboard). Resumo:
 
 - **Cores**: `--ink` (#1e2230), `--bg`/`--surface`/`--surface-2` (tons de papel), `--accent` (#7a2333, oxblood da marca), `--success`/`--warning`/`--danger` + variantes `-soft`, todos com equivalente de modo escuro no mesmo nome de token.
 - **Tipografia**: Fraunces (títulos/H1/H2), Source Sans 3 (texto de interface/rodapé), IBM Plex Mono (categorias, dados, rótulos).
