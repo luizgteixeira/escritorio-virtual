@@ -4,6 +4,9 @@ import { getOrCreateWorkspace } from '@/lib/workspace';
 
 export const runtime = 'nodejs';
 
+const MAX_DOCUMENTS = 500;
+const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
+
 function sanitizePathPart(value: string): string {
   const withoutDiacritics = value
     .normalize('NFD')
@@ -37,8 +40,16 @@ export async function GET() {
     );
   }
 
+  if ((documentos ?? []).length > MAX_DOCUMENTS) {
+    return Response.json(
+      { error: 'O backup excede o limite de 500 documentos por exportação.' },
+      { status: 413 }
+    );
+  }
+
   const entries: Record<string, Uint8Array> = {};
   const manifest = [];
+  let totalBytes = 0;
 
   for (const documento of documentos ?? []) {
     const { data: file, error: downloadError } = await supabase.storage
@@ -49,6 +60,14 @@ export async function GET() {
       return Response.json(
         { error: `Não foi possível baixar o documento "${documento.titulo}".` },
         { status: 502 }
+      );
+    }
+
+    totalBytes += file.size;
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      return Response.json(
+        { error: 'O backup excede o limite de 500 MB por exportação.' },
+        { status: 413 }
       );
     }
 

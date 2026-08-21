@@ -36,10 +36,11 @@ Checklist do ADR-001:
 - [x] Favicon real gerado a partir da marca (`brand/favicon.ico`, substituiu o placeholder padrão do `create-next-app`) + exports em PNG do ícone e dos lockups em `brand/png/`
 - [x] Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo" — cópia no Storage e versão inicial registrada em `documento_versao`
 - [x] Adicionar botão "Exportar tudo" (.zip) para backup local sob demanda — inclui os arquivos do Storage e um `manifest.json` com os metadados
+- [x] Controles mínimos de segurança — autenticação, RLS por workspace, Storage privado, exportação autenticada, exclusão confirmada e política de retenção
 - [ ] **← PRÓXIMO PASSO: Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário**
 - [ ] Se validar: revisar LGPD e sigilo profissional antes de abrir para outros advogados
 
-**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). O modelo padrão de Ofício já pode gerar novos Ofícios, com a cópia registrada como versão inicial em `documento_versao`. A exportação completa em `.zip` inclui os arquivos do Storage e um `manifest.json` com os metadados. O próximo passo é usar o sistema por 2–3 semanas e ajustar a organização. Rename para Sigiloteca commitado (`1550913`); funcionalidade em si segue a partir de `a7dfe48`.
+**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). O modelo padrão de Ofício já pode gerar novos Ofícios, com a cópia registrada como versão inicial em `documento_versao`. A exportação completa em `.zip` é autenticada, limitada a 500 documentos/500 MB e inclui os arquivos do Storage e um `manifest.json` com os metadados. Documentos podem ter retenção manual ou data fixa, que bloqueia a exclusão antes do prazo. Em produção, o certificado SSL/HTTPS também precisa ser habilitado no painel ou proxy da Hostinger; o app redireciona HTTP para HTTPS e envia headers de segurança. O próximo passo é usar o sistema por 2–3 semanas e ajustar a organização. Rename para Sigiloteca commitado (`1550913`); funcionalidade em si segue a partir de `a7dfe48`.
 
 ## O que já existe neste repositório
 
@@ -62,7 +63,8 @@ sigiloteca/
 │   └── migrations/
 │       ├── 20260820000001_init_schema.sql        Schema: workspace, documento, documento_versao + RLS
 │       ├── 20260820000002_storage_documentos.sql  Bucket "documentos" + RLS de Storage
-│       └── 20260820000003_documento_busca.sql     Busca full-text via trigger (tsvector + GIN)
+│       ├── 20260820000003_documento_busca.sql     Busca full-text via trigger (tsvector + GIN)
+│       └── 20260821000004_retencao_documentos.sql Política de retenção e descarte
 ├── src/
 │   ├── proxy.ts           Sessão + proteção de rotas (convenção Next 16, era middleware.ts)
 │   ├── app/

@@ -14,6 +14,7 @@ export type CreateDocumentoInput = {
   tags: string[];
   storagePath: string;
   isModeloPadrao?: boolean;
+  retentionUntil?: string;
 };
 
 export async function createDocumento(input: CreateDocumentoInput) {
@@ -30,6 +31,8 @@ export async function createDocumento(input: CreateDocumentoInput) {
     tags: input.tags,
     is_modelo_padrao:
       input.categoria === 'oficios' && input.isModeloPadrao === true,
+    retention_until: input.retentionUntil || null,
+    retention_policy: input.retentionUntil ? 'fixed_date' : 'manual',
     storage_provider: 'supabase',
     storage_path: input.storagePath,
   });
@@ -48,6 +51,7 @@ export type CreateOficioFromModeloInput = {
   processo?: string;
   area?: string;
   tags?: string[];
+  retentionUntil?: string;
 };
 
 export async function createOficioFromModelo(
@@ -96,6 +100,8 @@ export async function createOficioFromModelo(
     area: input.area?.trim() || null,
     tags: input.tags ?? [],
     is_modelo_padrao: false,
+    retention_until: input.retentionUntil || null,
+    retention_policy: input.retentionUntil ? 'fixed_date' : 'manual',
     storage_provider: 'supabase',
     storage_path: storagePath,
   });
@@ -131,7 +137,7 @@ export async function deleteDocumento(
   const supabase = await createClient();
   const { data: documento, error: documentoError } = await supabase
     .from('documento')
-    .select('id, storage_path')
+    .select('id, storage_path, retention_until')
     .eq('id', documentoId)
     .eq('workspace_id', workspaceId)
     .maybeSingle();
@@ -141,6 +147,14 @@ export async function deleteDocumento(
   }
   if (!documento) {
     throw new Error('Documento não encontrado.');
+  }
+  if (
+    documento.retention_until &&
+    new Date(documento.retention_until).getTime() > Date.now()
+  ) {
+    throw new Error(
+      `Este documento está retido até ${new Date(documento.retention_until).toLocaleDateString('pt-BR')}.`
+    );
   }
 
   const { data: versoes, error: versoesError } = await supabase

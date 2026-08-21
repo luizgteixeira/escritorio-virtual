@@ -30,6 +30,7 @@ export function NewOficioForm({ workspaceId }: { workspaceId: string }) {
         processo: String(formData.get('processo') ?? ''),
         area: String(formData.get('area') ?? ''),
         tags,
+        retentionUntil: String(formData.get('retentionUntil') ?? ''),
       });
       formRef.current?.reset();
       router.refresh();
@@ -100,6 +101,14 @@ export function NewOficioForm({ workspaceId }: { workspaceId: string }) {
           aria-label="Tags separadas por vírgula"
           className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
         />
+        <label className="flex flex-col gap-1 font-mono text-xs uppercase tracking-wide text-ink-muted">
+          Reter até (opcional)
+          <input
+            name="retentionUntil"
+            type="date"
+            className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
       </div>
 
       <button

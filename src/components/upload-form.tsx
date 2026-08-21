@@ -78,6 +78,7 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
     const processo = String(formData.get('processo') ?? '').trim();
     const area = String(formData.get('area') ?? '').trim();
     const isModeloPadrao = formData.get('isModeloPadrao') === 'on';
+    const retentionUntil = String(formData.get('retentionUntil') ?? '');
     const tagsRaw = String(formData.get('tags') ?? '');
     const tags = tagsRaw
       .split(',')
@@ -123,6 +124,7 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
         tags,
         storagePath,
         isModeloPadrao,
+        retentionUntil,
       });
 
       formRef.current?.reset();
@@ -230,6 +232,21 @@ export function UploadForm({ workspaceId }: { workspaceId: string }) {
             name="titulo"
             type="text"
             required
+            className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="retentionUntil"
+            className="font-mono text-xs uppercase tracking-wide text-ink-muted"
+          >
+            Reter até (opcional)
+          </label>
+          <input
+            id="retentionUntil"
+            name="retentionUntil"
+            type="date"
             className="rounded-md border border-line bg-surface-2 px-3 py-2 font-body text-sm text-ink"
           />
         </div>
