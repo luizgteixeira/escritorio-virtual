@@ -32,12 +32,14 @@ Checklist do ADR-001:
 - [x] Schema do modelo de dados prototipado em SQL (`supabase/migrations/`) — workspace, documento (com categoria + tags), documento_versao, RLS por workspace_id
 - [x] Projeto Supabase criado (`escritorio-virtual`, região São Paulo), migration rodada, `.env.local` preenchido e API confirmada respondendo com RLS ativa
 - [x] Upload + categorização + busca básica implementados, migrations aplicadas e testados no navegador (login, upload de documento real, aparece na lista com link de download funcionando)
+- [x] Nome definitivo validado e aplicado: **Sigiloteca** (repositório no GitHub, pasta local, `package.json`, título do app e tela de login, wordmark dos lockups — tudo renomeado e consistente)
+- [x] Favicon real gerado a partir da marca (`brand/favicon.ico`, substituiu o placeholder padrão do `create-next-app`) + exports em PNG do ícone e dos lockups em `brand/png/`
 - [ ] **← PRÓXIMO PASSO: Criar o modelo padrão de Ofício e a ação "Novo a partir deste modelo"**
 - [ ] Adicionar botão "Exportar tudo" (.zip) para backup local sob demanda
 - [ ] Usar por 2–3 semanas e ajustar a organização antes de pensar em multiusuário
 - [ ] Se validar: revisar LGPD e sigilo profissional antes de abrir para outros advogados
 
-**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). Nada de `documento_versao`/modelo padrão de Ofício foi construído ainda — é o próximo passo do checklist. Tudo já commitado (`a7dfe48`).
+**Importante:** o app está funcional de ponta a ponta — login, upload, categorização e busca testados no navegador com o usuário real, incluindo dois bugs achados e corrigidos no processo (busca full-text precisou virar trigger em vez de coluna gerada; nomes de arquivo com acento quebravam a chave no Storage, agora sanitizados). Nada de `documento_versao`/modelo padrão de Ofício foi construído ainda — é o próximo passo do checklist. Rename para Sigiloteca commitado (`1550913`); funcionalidade em si segue a partir de `a7dfe48`.
 
 ## O que já existe neste repositório
 
@@ -48,8 +50,10 @@ sigiloteca/
 │   ├── icon-color.svg
 │   ├── icon-mono.svg
 │   ├── favicon.svg
+│   ├── favicon.ico       Multi-resolução (16/32/48/64px), gerado do favicon.svg
 │   ├── lockup-horizontal.svg
-│   └── lockup-stacked.svg
+│   ├── lockup-stacked.svg
+│   └── png/              Exports em PNG do ícone e dos lockups (64–512px)
 ├── design/
 │   └── tokens.css         Variáveis CSS de cor + escala tipográfica (claro/escuro)
 ├── supabase/

@@ -3,6 +3,6 @@
   <rect x="85" y="130" width="230" height="150" rx="16" fill="#1e2230"/>
   <rect x="70" y="170" width="260" height="160" rx="18" fill="#f4f2ea" stroke="#1e2230" stroke-width="6"/>
   <rect x="250" y="150" width="60" height="34" rx="8" fill="#7a2333"/>
-  <text x="200" y="440" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="34" fill="#1e2230">Escritório Virtual</text>
+  <text x="200" y="440" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="34" fill="#1e2230">Sigiloteca</text>
   <text x="200" y="468" text-anchor="middle" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="13" letter-spacing="1.5" fill="#7a2333">GESTÃO JURÍDICA</text>
 </svg>
