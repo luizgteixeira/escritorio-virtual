@@ -19,7 +19,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escritório Virtual",
+  title: "Sigiloteca",
   description: "Gestão documental para advocacia",
 };
 

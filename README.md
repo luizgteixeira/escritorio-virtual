@@ -1,6 +1,6 @@
-# Escritório Virtual
+# Sigiloteca
 
-> Nome do projeto ainda **provisório**. Sistema de gestão documental para advocacia — começa como ferramenta pessoal (uso individual), com o objetivo de virar produto vendável para outros advogados depois de validado.
+> Sistema de gestão documental para advocacia — começa como ferramenta pessoal (uso individual), com o objetivo de virar produto vendável para outros advogados depois de validado. Nome de trabalho anterior: "Escritório Virtual".
 
 Desenvolvido por Luiz Gustavo — [luizgustavodev.com](https://luizgustavodev.com/)
 
@@ -42,7 +42,7 @@ Checklist do ADR-001:
 ## O que já existe neste repositório
 
 ```text
-escritorio-virtual/
+sigiloteca/
 ├── README.md            ← este arquivo
 ├── brand/                Identidade visual aprovada ("Pilha Organizada")
 │   ├── icon-color.svg

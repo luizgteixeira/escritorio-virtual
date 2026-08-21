@@ -11,7 +11,7 @@ export default async function LoginPage({
     <div className="flex min-h-full flex-1 items-center justify-center bg-bg px-4">
       <div className="w-full max-w-sm rounded-lg border border-line bg-surface p-8">
         <h1 className="font-display text-2xl font-semibold text-ink">
-          Escritório Virtual
+          Sigiloteca
         </h1>
         <p className="mt-1 font-body text-sm text-ink-muted">
           Entre com seu email e senha.
